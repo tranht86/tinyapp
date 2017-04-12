@@ -1,12 +1,16 @@
 const express = require('express')
 const bodyParser = require("body-parser");
+var cookieParser = require('cookie-parser')
+
 
 const PORT = process.env.PORT || 8080; //set port 8080
 
 const app = express()
+const username = []
 
 app.set("view engine", "ejs")
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser())
 
 function generateRandomString() {
   var text = "";
@@ -22,6 +26,7 @@ let urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.ca"
 };
+
 
 app.get ("/", (req,res) => {
   res.end("This is the home page")
@@ -40,14 +45,19 @@ app.get("/urls/new", (req, res) => {
 })
 
 app.get("/urls", (req, res) => {
-  let templateVars = {urls: urlDatabase};
+  let templateVars = {
+    urls: urlDatabase,
+    username: req.cookies["username"]
+  };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {shortURL: req.params.id, URL: urlDatabase[req.params.id]}
+  let templateVars = {
+    shortURL: req.params.id,
+    URL: urlDatabase[req.params.id],
+  }
   let longURL = urlDatabase[req.params.id]
-  console.log(longURL)
   console.log(templateVars)
   res.render("urls_show", templateVars);
 });
@@ -69,6 +79,17 @@ app.post("/urls/:id/update", (req, res) => {
   urlDatabase[req.params.id] = req.body['new_url']
   console.log('New Link updated')
   res.redirect('/urls')
+})
+
+app.post("/login", (req, res) => {
+  res.cookie("username", req.body.username);
+  res.redirect('/urls')
+})
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("username", req.cookies['username']);
+  res.redirect('/urls')
+
 })
 
 app.post("/urls", (req, res) => {

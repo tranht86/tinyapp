@@ -1,10 +1,25 @@
 <!DOCTYPE html>
 <html lang = "en">
 <head>
-  <header>Header</header>
+    <% if (username) { %>
+      <h1>Hello: <%=username%></h1>
+     <form method="POST" action="/logout" style="margin:150px;">
+     <input id="submit" action="/logout" method="POST" value="Logout" type="submit">
+
+    <% } else { %>
+    <form method="POST" action="/login" style="margin:150px;">
+    <input type = "text"
+           id = "username"
+           name = 'username'
+           value = "" />
+    <input id="submit" value="Login" type="submit">
+     <% } %>
+
+    </form>
 </head>
 
 <body>
+
 </body>
 
 </html>
